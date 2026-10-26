@@ -1,6 +1,5 @@
-export function fmtMoney(n, currency = 'VND') {
+export function fmtMoney(n) {
   n = Number(n) || 0;
-  if (currency === 'USD') return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
   return new Intl.NumberFormat('vi-VN').format(Math.round(n)) + ' ₫';
 }
 export const fmtDate = (d) => new Date(d).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' });

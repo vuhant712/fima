@@ -11,6 +11,11 @@
   .td { @apply px-3 py-2; }
 }
 body { @apply bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100; }
+.floating-particles { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.floating-particles__dot { position: absolute; border-radius: 9999px; opacity: .2; animation: particle-drift 7s ease-in-out infinite; }
+.floating-particles__dot--green { background: #22a05a; box-shadow: 0 0 10px rgba(34, 160, 90, .2); }
+.floating-particles__dot--amber { background: #e9a93b; box-shadow: 0 0 10px rgba(233, 169, 59, .18); }
+@keyframes particle-drift { 0%, 100% { opacity: .14; transform: translate3d(0, 0, 0); } 50% { opacity: .42; transform: translate3d(var(--drift), -26px, 0); } }
 @keyframes pop { 0% { transform: scale(0); opacity: 0 } 70% { transform: scale(1.25) } 100% { transform: scale(1); opacity: 1 } }
 @keyframes fall { 0% { transform: translateY(-10px) rotate(0); opacity: 1 } 100% { transform: translateY(160px) rotate(360deg); opacity: 0 } }
 .pop { animation: pop .55s ease-out both; }
@@ -48,4 +53,5 @@ body { @apply bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100; 
 @media (prefers-reduced-motion: reduce) {
   .reveal, .float, .page-enter, .gradient-text { animation: none; transition: none; opacity: 1; transform: none; }
   .fima-logo__bar { animation: none; transform: none; }
+  .floating-particles__dot { animation: none; opacity: .2; }
 }

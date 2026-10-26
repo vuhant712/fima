@@ -28,7 +28,7 @@ export function AppProvider({ children }) {
   const bump = useCallback(() => setVersion((v) => v + 1), []);
   const openTxModal = (editing = null, tab = 'EXPENSE') => setTxModal({ open: true, editing, tab });
   const closeTxModal = () => setTxModal((m) => ({ ...m, open: false }));
-  const fmt = (n) => fmtMoney(n, currency);
+  const fmt = (n) => fmtMoney(n);
 
   return (
     <Ctx.Provider value={{ dark, setDark, currency, setCurrency, lang, setLang, toast, version, bump, txModal, openTxModal, closeTxModal, fmt }}>
