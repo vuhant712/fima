@@ -8,12 +8,15 @@ import Wallets from './pages/Wallets.jsx';
 import Budgets from './pages/Budgets.jsx';
 import Reports from './pages/Reports.jsx';
 import Settings from './pages/Settings.jsx';
+import { Privacy, DataDeletion } from './pages/Legal.jsx';
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/setup" element={<Setup />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/data-deletion" element={<DataDeletion />} />
       <Route element={<Layout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/transactions" element={<Transactions />} />

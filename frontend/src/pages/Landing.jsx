@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import LoginModal from '../components/LoginModal.jsx';
 
@@ -21,6 +21,7 @@ export default function Landing() {
           <div key={t} className="card"><div className="text-2xl">{i}</div><b>{t}</b><p className="text-sm text-slate-500">{d}</p></div>
         ))}
       </div>
+      <p className="mt-8 text-sm text-slate-500"><Link to="/privacy" className="underline">Chính sách quyền riêng tư</Link> · <Link to="/data-deletion" className="underline">Xóa dữ liệu</Link></p>
       {open && <LoginModal onClose={() => setOpen(false)} />}
     </div>
   );
