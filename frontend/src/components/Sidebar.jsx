@@ -7,6 +7,7 @@ const items = [
   ['/wallets', '👛', 'Ví của tôi'],
   ['/reports', '📊', 'Báo cáo'],
   ['/budgets', '🎯', 'Ngân sách'],
+  ['/savings-goals', '🌱', 'Mục tiêu tiết kiệm'],
   ['/settings', '⚙️', 'Cài đặt'],
 ];
 

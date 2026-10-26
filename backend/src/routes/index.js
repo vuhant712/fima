@@ -6,6 +6,7 @@ const c = require('../controllers/categoryController');
 const t = require('../controllers/transactionController');
 const b = require('../controllers/budgetController');
 const r = require('../controllers/reportController');
+const g = require('../controllers/savingsGoalController');
 
 // Công khai
 router.post('/auth/google', a.google);
@@ -33,6 +34,11 @@ router.delete('/transactions/:id', t.remove);
 router.get('/budgets', b.list);
 router.post('/budgets', b.create);
 router.delete('/budgets/:id', b.remove);
+
+router.get('/savings-goals', g.list);
+router.post('/savings-goals', g.create);
+router.post('/savings-goals/:id/contributions', g.contribute);
+router.delete('/savings-goals/:id', g.remove);
 
 router.get('/reports/summary', r.summary);
 router.get('/reports/expenses', r.expenses);

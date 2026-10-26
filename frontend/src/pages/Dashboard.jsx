@@ -34,6 +34,7 @@ export default function Dashboard() {
   const [pie, setPie] = useState([]);
   const [week, setWeek] = useState([]);
   const [rows, setRows] = useState([]);
+  const [goals, setGoals] = useState([]);
   const net = sum.monthIncome - sum.monthExpense;
   const pieTotal = pie.reduce((total, item) => total + item.value, 0);
   const today = new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
@@ -49,7 +50,35 @@ export default function Dashboard() {
     api.get('/reports/expenses').then((r) => setPie(r.data));
     api.get('/reports/weekly').then((r) => setWeek(r.data));
     api.get('/transactions', { params: { limit: 8 } }).then((r) => setRows(r.data));
+    api.get('/savings-goals').then((r) => setGoals(r.data));
   }, [version]);
+
+  const activeGoals = goals.filter((goal) => goal.savedAmount < goal.targetAmount);
+  const savedTotal = goals.reduce((total, goal) => total + goal.savedAmount, 0);
+  const remainingTotal = goals.reduce((total, goal) => total + Math.max(0, goal.targetAmount - goal.savedAmount), 0);
+  const topExpense = pie[0];
+  const insights = [
+    topExpense && {
+      icon: '↗',
+      tone: 'mint',
+      title: `Chi tiêu ${topExpense.name.toLowerCase()} là khoản lớn nhất`,
+      message: `Chiếm ${pieTotal ? Math.round((topExpense.value / pieTotal) * 100) : 0}% tổng chi tháng này. Hãy thử đặt hạn mức phù hợp.`,
+    },
+    activeGoals.length > 0 && {
+      icon: '🎯',
+      tone: 'amber',
+      title: `Bạn còn thiếu ${fmt(remainingTotal)}`,
+      message: `để hoàn thành ${activeGoals.length} mục tiêu tiết kiệm đang thực hiện.`,
+    },
+    sum.monthIncome > 0 && {
+      icon: '◈',
+      tone: 'violet',
+      title: net >= 0 ? 'Dòng tiền tháng này đang tích cực' : 'Chi tiêu đang cao hơn thu nhập',
+      message: net >= 0
+        ? `Bạn đang giữ lại ${fmt(net)}. Duy trì thói quen để tiến gần hơn tới mục tiêu.`
+        : `Chênh lệch hiện tại là ${fmt(Math.abs(net))}. Cân nhắc điều chỉnh ngân sách tháng này.`,
+    },
+  ].filter(Boolean).slice(0, 3);
 
   return (
     <div className="dashboard-page">
@@ -130,15 +159,55 @@ export default function Dashboard() {
         </article>
       </section>
 
-      <section className="card dashboard-panel dashboard-transactions">
-        <div className="dashboard-panel__heading">
-          <div>
-            <h2>Giao dịch gần đây</h2>
-            <p className="dashboard-muted">Theo dõi những khoản thu chi mới nhất</p>
+      <section className="dashboard-lower">
+        <article className="card dashboard-panel dashboard-transactions">
+          <div className="dashboard-panel__heading">
+            <div>
+              <h2>Giao dịch gần đây</h2>
+              <p className="dashboard-muted">Theo dõi những khoản thu chi mới nhất</p>
+            </div>
+            <Link className="dashboard-link" to="/transactions">Xem tất cả <span aria-hidden="true">→</span></Link>
           </div>
-          <Link className="dashboard-link" to="/transactions">Xem tất cả <span aria-hidden="true">→</span></Link>
-        </div>
-        <TxTable rows={rows} />
+          <TxTable rows={rows} />
+        </article>
+        <aside className="dashboard-side-panels">
+          <section className="card dashboard-panel dashboard-goals">
+            <div className="dashboard-panel__heading">
+              <h2>Mục tiêu tiết kiệm</h2>
+              <Link className="dashboard-link" to="/savings-goals">Xem tất cả →</Link>
+            </div>
+            {activeGoals.length ? activeGoals.slice(0, 3).map((goal) => {
+              const progress = Math.min(100, Math.round((goal.savedAmount / goal.targetAmount) * 100));
+              return (
+                <Link className="dashboard-goal" to="/savings-goals" key={goal.id}>
+                  <span className="dashboard-goal__icon">{goal.icon}</span>
+                  <span className="dashboard-goal__details">
+                    <strong>{goal.name}</strong>
+                    <small>{fmt(goal.savedAmount)} / {fmt(goal.targetAmount)}</small>
+                    <span className="dashboard-goal__bar"><i style={{ width: `${progress}%` }} /></span>
+                  </span>
+                  <span className="dashboard-goal__percent">{progress}%</span>
+                </Link>
+              );
+            }) : (
+              <div className="dashboard-goals-empty">
+                <span>🌱</span><p>{goals.length ? `Đã tiết kiệm ${fmt(savedTotal)} — bạn đã hoàn thành mọi mục tiêu!` : 'Bắt đầu lên kế hoạch cho ước mơ của bạn.'}</p>
+                <Link className="dashboard-link" to="/savings-goals">{goals.length ? 'Xem mục tiêu' : 'Tạo mục tiêu'} →</Link>
+              </div>
+            )}
+          </section>
+          <section className="card dashboard-panel dashboard-insights">
+            <div className="dashboard-panel__heading">
+              <h2><span aria-hidden="true">💡</span> FiMa Insights</h2>
+              <Link className="dashboard-link" to="/reports">Xem báo cáo →</Link>
+            </div>
+            {insights.length ? insights.map((insight) => (
+              <article className={`dashboard-insight dashboard-insight--${insight.tone}`} key={insight.title}>
+                <span>{insight.icon}</span><div><strong>{insight.title}</strong><p>{insight.message}</p></div>
+              </article>
+            )) : <p className="dashboard-insights-empty">Thêm giao dịch để FiMa phân tích tình hình tài chính của bạn.</p>}
+          </section>
+        </aside>
       </section>
     </div>
   );

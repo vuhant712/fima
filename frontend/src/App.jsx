@@ -11,6 +11,7 @@ import Wallets from './pages/Wallets.jsx';
 import Budgets from './pages/Budgets.jsx';
 import Reports from './pages/Reports.jsx';
 import Settings from './pages/Settings.jsx';
+import SavingsGoals from './pages/SavingsGoals.jsx';
 import { Privacy, DataDeletion } from './pages/Legal.jsx';
 
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="/wallets" element={<Wallets />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/budgets" element={<Budgets />} />
+            <Route path="/savings-goals" element={<SavingsGoals />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
           <Route path="*" element={<Navigate to="/" />} />
