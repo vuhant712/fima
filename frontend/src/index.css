@@ -11,3 +11,34 @@
   .td { @apply px-3 py-2; }
 }
 body { @apply bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100; }
+@keyframes pop { 0% { transform: scale(0); opacity: 0 } 70% { transform: scale(1.25) } 100% { transform: scale(1); opacity: 1 } }
+@keyframes fall { 0% { transform: translateY(-10px) rotate(0); opacity: 1 } 100% { transform: translateY(160px) rotate(360deg); opacity: 0 } }
+.pop { animation: pop .55s ease-out both; }
+.confetti { position: absolute; top: 0; animation: fall 1.8s ease-in forwards; }
+@keyframes page-in { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+.page-enter { animation: page-in .4s ease-out both; }
+
+@keyframes splash-hide { to { opacity: 0; visibility: hidden } }
+@keyframes logo-in { 0% { opacity: 0; transform: scale(.6) } 60% { transform: scale(1.08) } 100% { opacity: 1; transform: scale(1) } }
+.splash { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; background: #0b1410; animation: splash-hide .5s 1.2s forwards; }
+.splash img { height: 140px; animation: logo-in .8s ease-out both; }
+.splash .bar { width: 160px; height: 4px; overflow: hidden; border-radius: 9999px; background: #1f3a2c; }
+.splash .bar::after { content: ''; display: block; height: 100%; width: 40%; background: #22c55e; border-radius: 9999px; animation: slide 1s ease-in-out infinite; }
+@keyframes slide { from { transform: translateX(-100%) } to { transform: translateX(400%) } }
+
+/* Hiệu ứng khi rê chuột */
+.card { transition: transform .2s ease, box-shadow .2s ease; }
+.card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0, 0, 0, .12); }
+.btn:active { transform: scale(.96); }
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity .8s ease, transform .8s ease; }
+.reveal-show { opacity: 1; transform: none; }
+
+@keyframes float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-14px) } }
+.float { animation: float 4s ease-in-out infinite; }
+
+@keyframes gradient-move { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
+.gradient-text { background: linear-gradient(90deg, #16a34a, #84cc16, #f59e0b, #16a34a); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: gradient-move 6s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .float, .page-enter, .gradient-text { animation: none; transition: none; opacity: 1; transform: none; }
+}

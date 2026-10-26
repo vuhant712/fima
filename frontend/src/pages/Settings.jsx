@@ -4,15 +4,16 @@ import api, { errMsg } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useApp } from '../context/AppContext.jsx';
 
-const FEEDBACK_EMAIL = 'feedback@example.com'; // TODO: đổi thành email nhận góp ý của bạn
+const FEEDBACK_EMAIL = 'email-cua-ban@gmail.com'; // TODO: đổi thành email của bạn
 
 export default function Settings() {
   const { user, logout } = useAuth();
-  const { dark, setDark, currency, setCurrency, lang, setLang, toast } = useApp();
+  const { dark, setDark, toast } = useApp();
   const navigate = useNavigate();
   const [cats, setCats] = useState([]);
   const [nc, setNc] = useState({ type: 'EXPENSE', name: '', icon: '📁' });
   const [fb, setFb] = useState('');
+  const [sent, setSent] = useState(false);
 
   const load = () => api.get('/categories').then((r) => setCats(r.data));
   useEffect(() => { load(); }, []);
@@ -22,6 +23,13 @@ export default function Settings() {
     try { await api.post('/categories', nc); setNc({ ...nc, name: '' }); load(); } catch (err) { toast(errMsg(err), 'err'); }
   };
   const delCat = async (c) => { if (confirm(`Xóa danh mục "${c.name}"?`)) { await api.delete(`/categories/${c.id}`); load(); } };
+
+  const sendFeedback = (e) => {
+    e.preventDefault();
+    window.location.href = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent('Góp ý FiMa')}&body=${encodeURIComponent(fb)}`;
+    setSent(true);
+    setFb('');
+  };
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -36,13 +44,6 @@ export default function Settings() {
         <label className="flex items-center justify-between">🌙 Chế độ tối
           <input type="checkbox" className="h-5 w-5" checked={dark} onChange={(e) => setDark(e.target.checked)} />
         </label>
-        <label className="flex items-center justify-between">Ngôn ngữ
-          <select className="input w-auto" value={lang} onChange={(e) => setLang(e.target.value)}><option value="vi">Tiếng Việt</option><option value="en">English</option></select>
-        </label>
-        <label className="flex items-center justify-between">Tiền tệ hiển thị
-          <select className="input w-auto" value={currency} onChange={(e) => setCurrency(e.target.value)}><option value="VND">VND (₫)</option><option value="USD">USD ($)</option></select>
-        </label>
-        <p className="text-xs text-slate-500">Tiền tệ chỉ đổi cách hiển thị, không quy đổi tỷ giá.</p>
       </div>
 
       <div className="card space-y-3">
@@ -50,7 +51,7 @@ export default function Settings() {
         <form onSubmit={addCat} className="flex flex-wrap gap-2">
           <select className="input w-auto" value={nc.type} onChange={(e) => setNc({ ...nc, type: e.target.value })}><option value="EXPENSE">Chi</option><option value="INCOME">Thu</option></select>
           <input className="input w-20" value={nc.icon} onChange={(e) => setNc({ ...nc, icon: e.target.value })} />
-          <input required className="input flex-1" placeholder="Tên danh mục, VD: Tiền mua sữa cho con" value={nc.name} onChange={(e) => setNc({ ...nc, name: e.target.value })} />
+          <input required className="input flex-1" placeholder="Tên danh mục" value={nc.name} onChange={(e) => setNc({ ...nc, name: e.target.value })} />
           <button className="btn btn-primary">Thêm</button>
         </form>
         <div className="flex flex-wrap gap-2">
@@ -62,10 +63,26 @@ export default function Settings() {
         </div>
       </div>
 
-      <div className="card space-y-2">
-        <h3 className="font-semibold">Báo lỗi / Góp ý</h3>
-        <textarea className="input" rows="3" value={fb} onChange={(e) => setFb(e.target.value)} placeholder="Nhập góp ý của bạn..." />
-        <a className="btn btn-primary inline-block" href={`mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent('Góp ý FiMa')}&body=${encodeURIComponent(fb)}`}>Gửi góp ý</a>
+      <div className="card relative overflow-hidden">
+        <h3 className="mb-2 font-semibold">Báo lỗi / Góp ý</h3>
+        {sent ? (
+          <div className="py-8 text-center">
+            {[...Array(16)].map((_, i) => (
+              <span key={i} className="confetti text-xl" style={{ left: `${(i * 7 + 4) % 94}%`, animationDelay: `${(i % 6) * 0.12}s` }}>
+                {['🎉', '✨', '💚', '🎊'][i % 4]}
+              </span>
+            ))}
+            <div className="pop text-6xl">💚</div>
+            <p className="pop mt-3 text-xl font-bold">Cảm ơn bạn đã góp ý!</p>
+            <p className="text-sm text-slate-500">FiMa sẽ ngày càng tốt hơn nhờ ý kiến của bạn.</p>
+            <button className="btn btn-ghost mt-4" onClick={() => setSent(false)}>Gửi góp ý khác</button>
+          </div>
+        ) : (
+          <form onSubmit={sendFeedback} className="space-y-2">
+            <textarea required className="input" rows="3" value={fb} onChange={(e) => setFb(e.target.value)} placeholder="Nhập góp ý của bạn..." />
+            <button className="btn btn-primary">Gửi góp ý</button>
+          </form>
+        )}
       </div>
     </div>
   );
