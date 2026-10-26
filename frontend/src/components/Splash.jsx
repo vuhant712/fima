@@ -1,7 +1,9 @@
+import FiMaLogo from './FiMaLogo.jsx';
+
 export default function Splash() {
   return (
     <div className="splash">
-      <img src="/logo.png" alt="FiMa" />
+      <FiMaLogo />
       <div className="bar" />
     </div>
   );

@@ -41,7 +41,7 @@ export default function Transactions() {
         <input type="month" className="input w-auto" value={f.month} onChange={(e) => setF({ ...f, month: e.target.value })} />
       </div>
       <TxTable rows={rows} onEdit={(t) => openTxModal(t)} onDelete={remove} />
-      <p className="text-xs text-slate-500">Mẹo: bấm đúp vào một dòng để sửa.</p>
+      <p className="text-xs text-slate-500">Mẹo nhỏ: bấm đúp vào một dòng để sửa nhanh hơn.</p>
     </div>
   );
 }

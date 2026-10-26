@@ -5,10 +5,11 @@ import api from '../services/api.js';
 import Sidebar from './Sidebar.jsx';
 import Header from './Header.jsx';
 import TransactionModal from './TransactionModal.jsx';
+import FiMaLogo from './FiMaLogo.jsx';
 
 const Loading = () => (
   <div className="flex h-screen items-center justify-center">
-    <img src="/logo.png" alt="" className="h-24 animate-pulse" />
+    <FiMaLogo alt="" className="h-24 animate-pulse" />
   </div>
 );
 

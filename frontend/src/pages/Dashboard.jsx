@@ -47,7 +47,7 @@ export default function Dashboard() {
           ) : <p className="py-16 text-center text-slate-500">Chưa có khoản chi nào trong tháng.</p>}
         </div>
         <div className="card">
-          <h3 className="mb-2 font-semibold">Thu - Chi 7 ngày qua</h3>
+          <h3 className="mb-2 font-semibold"> Khoản Thu - Chi trong 7 ngày qua</h3>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={week}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -64,7 +64,7 @@ export default function Dashboard() {
 
       {/* Hàng 3: 10 giao dịch gần nhất */}
       <div className="card">
-        <h3 className="mb-2 font-semibold">10 giao dịch gần nhất</h3>
+        <h3 className="mb-2 font-semibold">Các giao dịch gần nhất</h3>
         <TxTable rows={rows} />
       </div>
     </div>

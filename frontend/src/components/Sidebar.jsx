@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import FiMaLogo from './FiMaLogo.jsx';
 
 const items = [
   ['/dashboard', '🏠', 'Tổng quan'],
@@ -12,7 +13,7 @@ const items = [
 export default function Sidebar() {
   return (
     <aside className="w-1/5 min-w-[200px] border-r border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800 print:hidden">
-      <img src="/logo.png" alt="FiMa" className="mx-auto mb-6 h-24" />
+      <FiMaLogo className="mx-auto mb-6 h-24" />
       <nav className="space-y-1">
         {items.map(([to, icon, label]) => (
           <NavLink

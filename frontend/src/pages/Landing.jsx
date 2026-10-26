@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import LoginModal from '../components/LoginModal.jsx';
 import Reveal from '../components/Reveal.jsx';
+import FiMaLogo from '../components/FiMaLogo.jsx';
 
 const features = [
   ['👛', 'Nhiều ví', 'Tiền mặt, ngân hàng, ví điện tử, tất cả trong một nơi.'],
@@ -38,7 +39,7 @@ export default function Landing() {
   return (
     <div ref={root} className="overflow-x-hidden">
       <header className="sticky top-0 z-30 flex items-center justify-between bg-white/70 px-6 py-3 backdrop-blur dark:bg-slate-900/70">
-        <img src="/logo.png" alt="FiMa" className="h-10" />
+        <FiMaLogo className="h-10" />
         <button className="btn btn-primary" onClick={start}>{user ? 'Vào ứng dụng' : 'Đăng nhập'}</button>
       </header>
 
@@ -53,7 +54,7 @@ export default function Landing() {
         <span style={p(0.4)} className="absolute bottom-[22%] right-[22%] text-4xl"><span className="float inline-block [animation-delay:.5s]">💳</span></span>
 
         <div style={p(0.15)} className="relative z-10 flex flex-col items-center gap-6">
-          <Reveal><img src="/logo.png" alt="FiMa" className="float h-48" /></Reveal>
+          <Reveal><FiMaLogo className="float h-48" /></Reveal>
           <Reveal delay={150}><h1 className="gradient-text text-4xl font-extrabold md:text-6xl">Quản lý thu chi, đơn giản.</h1></Reveal>
           <Reveal delay={300}><p className="max-w-xl text-lg text-slate-500">Ghi chép giao dịch, quản lý nhiều ví, đặt ngân sách và xem báo cáo trực quan chỉ trong vài giây.</p></Reveal>
           <Reveal delay={450}><button className="btn btn-primary px-10 py-3 text-lg shadow-lg hover:scale-105" onClick={start}>Bắt đầu ngay</button></Reveal>

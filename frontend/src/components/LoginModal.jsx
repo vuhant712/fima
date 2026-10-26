@@ -4,6 +4,7 @@ import api, { errMsg } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useApp } from '../context/AppContext.jsx';
 import { initGoogle, loadFacebook, facebookLogin } from '../services/social.js';
+import FiMaLogo from './FiMaLogo.jsx';
 
 export default function LoginModal({ onClose }) {
   const { login } = useAuth();
@@ -37,7 +38,7 @@ export default function LoginModal({ onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
       <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm space-y-4 rounded-2xl bg-white p-8 text-center shadow-xl dark:bg-slate-800">
-        <img src="/logo.png" alt="FiMa" className="mx-auto h-20" />
+        <FiMaLogo className="mx-auto h-20" />
         <h2 className="text-xl font-bold">Đăng nhập vào FiMa</h2>
         <div ref={gRef} className="flex justify-center" />
         <button disabled={busy} onClick={fb} className="btn w-full bg-[#1877F2] text-white hover:opacity-90">Tiếp tục với Facebook</button>

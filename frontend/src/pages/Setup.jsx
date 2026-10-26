@@ -4,6 +4,7 @@ import api, { errMsg } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useApp } from '../context/AppContext.jsx';
 import MoneyInput from '../components/MoneyInput.jsx';
+import FiMaLogo from '../components/FiMaLogo.jsx';
 
 export default function Setup() {
   const { user, loading } = useAuth();
@@ -29,7 +30,7 @@ export default function Setup() {
   return (
     <div className="flex min-h-screen items-center justify-center p-6">
       <form onSubmit={submit} className="card w-full max-w-md space-y-4 p-8">
-        <img src="/logo.png" alt="" className="mx-auto h-24" />
+        <FiMaLogo alt="" className="mx-auto h-24" />
         <h1 className="text-center text-xl font-bold">Xin chào bạn mới, hãy tạo một chiếc ví đầu tiên nhé!</h1>
         <label className="block text-sm font-medium">Tên ví
           <input required className="input mt-1" value={name} onChange={(e) => setName(e.target.value)} placeholder="Tiền mặt, Techcombank..." />
