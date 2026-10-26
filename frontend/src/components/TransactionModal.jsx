@@ -8,18 +8,20 @@ const TABS = [['EXPENSE', 'Tiền Chi'], ['INCOME', 'Tiền Thu'], ['TRANSFER', 
 const toLocalInput = (d) => new Date(new Date(d).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 
 export default function TransactionModal() {
-  const { txModal, closeTxModal, toast, bump } = useApp();
+  const { txModal, closeTxModal, toast, bump, fmt } = useApp();
   const { open, editing, tab: initialTab } = txModal;
   const [tab, setTab] = useState('EXPENSE');
   const [wallets, setWallets] = useState([]);
   const [cats, setCats] = useState([]);
   const [f, setF] = useState({});
   const [saving, setSaving] = useState(false);
+  const [confirmExpense, setConfirmExpense] = useState(false);
   const set = (k, v) => setF((s) => ({ ...s, [k]: v }));
 
   // Mỗi lần mở: tải ví + danh mục, nạp sẵn dữ liệu (thêm mới hoặc đang sửa)
   useEffect(() => {
     if (!open) return;
+    setConfirmExpense(false);
     Promise.all([api.get('/wallets'), api.get('/categories')]).then(([w, c]) => {
       setWallets(w.data);
       setCats(c.data);
@@ -41,17 +43,13 @@ export default function TransactionModal() {
 
   const catList = cats.filter((c) => c.type === tab);
   const curWallet = wallets.find((w) => w.id === Number(f.walletId));
+  const availableBalance = Number(curWallet?.balance || 0) + (
+    editing?.type === 'EXPENSE' && Number(editing.walletId) === Number(curWallet?.id)
+      ? Math.abs(Number(editing.amount))
+      : 0
+  );
 
-  const submit = async (e) => {
-    e.preventDefault();
-    let amount = Number(f.amount);
-    if (tab === 'ADJUSTMENT') amount = amount - Number(curWallet?.balance || 0); // nhập số dư mới -> tính chênh lệch
-    if (!amount) return toast('Số tiền không hợp lệ', 'err');
-    const body = {
-      type: tab, amount, walletId: Number(f.walletId), note: f.note, date: new Date(f.date).toISOString(),
-      toWalletId: tab === 'TRANSFER' ? Number(f.toWalletId) : undefined,
-      categoryId: tab === 'INCOME' || tab === 'EXPENSE' ? Number(f.categoryId) : undefined,
-    };
+  const saveTransaction = async (body) => {
     setSaving(true);
     try {
       if (editing) await api.put(`/transactions/${editing.id}`, body);
@@ -63,12 +61,36 @@ export default function TransactionModal() {
       toast(errMsg(err), 'err');
     } finally {
       setSaving(false);
+      setConfirmExpense(false);
     }
   };
 
+  const buildBody = () => {
+    let amount = Number(f.amount);
+    if (tab === 'ADJUSTMENT') amount -= Number(curWallet?.balance || 0); // nhập số dư mới -> tính chênh lệch
+    return {
+      type: tab, amount, walletId: Number(f.walletId), note: f.note, date: new Date(f.date).toISOString(),
+      toWalletId: tab === 'TRANSFER' ? Number(f.toWalletId) : undefined,
+      categoryId: tab === 'INCOME' || tab === 'EXPENSE' ? Number(f.categoryId) : undefined,
+    };
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    const body = buildBody();
+    const amount = Number(f.amount);
+    if (!amount) return toast('Số tiền không hợp lệ', 'err');
+    if (tab === 'EXPENSE' && Number(f.amount) > availableBalance) {
+      setConfirmExpense(true);
+      return;
+    }
+    await saveTransaction(body);
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={closeTxModal}>
-      <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="w-full max-w-md space-y-3 rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-800">
+    <>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={closeTxModal}>
+        <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="w-full max-w-md space-y-3 rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-800">
         <div className="flex gap-1 rounded-lg bg-slate-100 p-1 dark:bg-slate-700">
           {TABS.filter(([k]) => !editing || k === tab).map(([k, l]) => (
             <button type="button" key={k} onClick={() => setTab(k)} className={`flex-1 rounded-md px-2 py-1.5 text-sm font-medium ${tab === k ? 'bg-green-600 text-white' : ''}`}>
@@ -78,7 +100,14 @@ export default function TransactionModal() {
         </div>
 
         <label className="block text-sm font-medium">{tab === 'ADJUSTMENT' ? 'Số dư mới của ví' : 'Số tiền'}
-          <MoneyInput required autoFocus value={f.amount} onChange={(v) => set('amount', v)} className="mt-1 text-2xl font-bold" />
+          <MoneyInput
+            required
+            autoFocus
+            value={f.amount}
+            onChange={(v) => set('amount', v)}
+            placeholder={curWallet ? `Hiện có ${fmt(curWallet.balance)}` : ''}
+            className="mt-1 text-2xl font-bold placeholder:text-base placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-slate-500"
+          />
         </label>
 
         {(tab === 'EXPENSE' || tab === 'INCOME') && (
@@ -116,7 +145,44 @@ export default function TransactionModal() {
           <button type="button" className="btn btn-ghost" onClick={closeTxModal}>Hủy</button>
           <button disabled={saving} className="btn btn-primary">Lưu giao dịch</button>
         </div>
-      </form>
-    </div>
+        </form>
+      </div>
+      {confirmExpense && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"
+          onClick={() => setConfirmExpense(false)}
+        >
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="expense-warning-title"
+            className="w-full max-w-sm rounded-2xl bg-white p-7 text-center shadow-2xl dark:bg-slate-800"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="expense-warning-icon" aria-hidden="true">❗</div>
+            <h2 id="expense-warning-title" className="mt-3 text-lg font-bold">
+              Hiện đã vượt quá số tiền hiện tại. Bạn chắc chắn chứ !
+            </h2>
+            <div className="mt-6 flex justify-center gap-3">
+              <button
+                type="button"
+                className="btn bg-red-600 text-white hover:bg-red-700"
+                onClick={closeTxModal}
+              >
+                Bỏ qua
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={saving}
+                onClick={() => saveTransaction(buildBody())}
+              >
+                Chắc chắn
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

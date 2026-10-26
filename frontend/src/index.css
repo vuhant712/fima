@@ -22,6 +22,8 @@ body { @apply bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100; 
 .confetti { position: absolute; top: 0; animation: fall 1.8s ease-in forwards; }
 @keyframes page-in { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
 .page-enter { animation: page-in .4s ease-out both; }
+@keyframes warning-wobble { 0%, 100% { transform: rotate(0) } 20% { transform: rotate(-14deg) } 40% { transform: rotate(12deg) } 60% { transform: rotate(-9deg) } 80% { transform: rotate(6deg) } }
+.expense-warning-icon { display: inline-block; font-size: 3.5rem; transform-origin: 50% 85%; animation: warning-wobble .8s ease-in-out infinite; }
 
 @keyframes splash-hide { to { opacity: 0; visibility: hidden } }
 @keyframes logo-in { 0% { opacity: 0; transform: scale(.6) } 60% { transform: scale(1.08) } 100% { opacity: 1; transform: scale(1) } }
@@ -54,4 +56,5 @@ body { @apply bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100; 
   .reveal, .float, .page-enter, .gradient-text { animation: none; transition: none; opacity: 1; transform: none; }
   .fima-logo__bar { animation: none; transform: none; }
   .floating-particles__dot { animation: none; opacity: .2; }
+  .expense-warning-icon { animation: none; }
 }
