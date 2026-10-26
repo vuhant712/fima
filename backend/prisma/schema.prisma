@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Provider {
+  GOOGLE
+  FACEBOOK
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+enum TxType {
+  INCOME
+  EXPENSE
+  TRANSFER
+  ADJUSTMENT
+}
+
+model User {
+  id         Int        @id @default(autoincrement())
+  name       String
+  email      String?    @unique
+  avatarUrl  String?
+  provider   Provider
+  providerId String
+  createdAt  DateTime   @default(now())
+  wallets    Wallet[]
+  categories Category[]
+  budgets    Budget[]
+
+  @@unique([provider, providerId])
+}
+
+model Wallet {
+  id           Int           @id @default(autoincrement())
+  userId       Int
+  name         String
+  balance      Decimal       @default(0) @db.Decimal(18, 2)
+  icon         String        @default("💰")
+  createdAt    DateTime      @default(now())
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[] @relation("WalletTx")
+  incoming     Transaction[] @relation("ToWalletTx")
+}
+
+model Category {
+  id           Int           @id @default(autoincrement())
+  userId       Int
+  type         CategoryType
+  name         String
+  icon         String        @default("📁")
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  budgets      Budget[]
+}
+
+model Transaction {
+  id         Int       @id @default(autoincrement())
+  walletId   Int
+  toWalletId Int?
+  categoryId Int?
+  type       TxType
+  amount     Decimal   @db.Decimal(18, 2)
+  note       String?
+  date       DateTime  @default(now())
+  wallet     Wallet    @relation("WalletTx", fields: [walletId], references: [id], onDelete: Cascade)
+  toWallet   Wallet?   @relation("ToWalletTx", fields: [toWalletId], references: [id], onDelete: Restrict)
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([walletId, date])
+}
+
+model Budget {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  categoryId  Int
+  limitAmount Decimal  @db.Decimal(18, 2)
+  month       String   // dạng "YYYY-MM"
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, categoryId, month])
+}
