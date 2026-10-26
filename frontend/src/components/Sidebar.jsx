@@ -12,22 +12,31 @@ const items = [
 
 export default function Sidebar() {
   return (
-    <aside className="w-1/5 min-w-[200px] border-r border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800 print:hidden">
-      <FiMaLogo className="mx-auto mb-6 h-24" />
-      <nav className="space-y-1">
+    <aside className="fima-sidebar print:hidden">
+      <div className="fima-brand">
+        <FiMaLogo className="h-12 w-12" />
+        <span>FiMa</span>
+      </div>
+      <p className="fima-nav-label">MENU</p>
+      <nav className="fima-nav">
         {items.map(([to, icon, label]) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-lg px-3 py-2 font-medium ${isActive ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' : 'hover:bg-slate-100 dark:hover:bg-slate-700'}`
+              `fima-nav__link${isActive ? ' fima-nav__link--active' : ''}`
             }
           >
-            <span>{icon}</span>
+            <span className="fima-nav__icon" aria-hidden="true">{icon}</span>
             {label}
           </NavLink>
         ))}
       </nav>
+      <div className="fima-sidebar-tip">
+        <span className="fima-sidebar-tip__icon" aria-hidden="true">🌱</span>
+        <p>Quản lý tài chính<br />thông minh cùng FiMa</p>
+        <NavLink to="/budgets" className="fima-sidebar-tip__link">Khám phá ngay <span aria-hidden="true">→</span></NavLink>
+      </div>
     </aside>
   );
 }

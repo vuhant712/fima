@@ -29,11 +29,11 @@ export default function Layout() {
   if (!ready) return <Loading />;
 
   return (
-    <div className="flex min-h-screen">
+    <div className="fima-shell flex min-h-screen">
       <Sidebar />
       <div className="flex-1">
         <Header />
-        <main className="p-6">
+        <main className="fima-main">
           <div key={pathname} className="page-enter">
             <Outlet />
           </div>

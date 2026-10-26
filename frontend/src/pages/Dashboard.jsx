@@ -1,72 +1,139 @@
 import { useEffect, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Link } from 'react-router-dom';
+import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import api from '../services/api.js';
 import { useApp } from '../context/AppContext.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 import TxTable from '../components/TxTable.jsx';
 
 export const COLORS = ['#16a34a', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#14b8a6', '#ec4899', '#64748b'];
+const chartTooltip = {
+  contentStyle: { background: '#071c1e', border: '1px solid #164448', borderRadius: 12, color: '#e5f5f2' },
+  labelStyle: { color: '#d5e8e5' },
+  itemStyle: { color: '#e5f5f2' },
+};
+
+function StatCard({ icon, label, value, note, tone }) {
+  return (
+    <article className={`dashboard-stat dashboard-stat--${tone}`}>
+      <div className="dashboard-stat__icon" aria-hidden="true">{icon}</div>
+      <div className="min-w-0">
+        <p className="dashboard-muted text-sm">{label}</p>
+        <p className="dashboard-stat__value">{value}</p>
+        <p className="dashboard-stat__note">{note}</p>
+      </div>
+      <span className="dashboard-stat__glow" aria-hidden="true" />
+    </article>
+  );
+}
 
 export default function Dashboard() {
   const { version, fmt } = useApp();
+  const { user } = useAuth();
   const [sum, setSum] = useState({ totalAssets: 0, monthIncome: 0, monthExpense: 0 });
   const [pie, setPie] = useState([]);
   const [week, setWeek] = useState([]);
   const [rows, setRows] = useState([]);
+  const net = sum.monthIncome - sum.monthExpense;
+  const pieTotal = pie.reduce((total, item) => total + item.value, 0);
+  const today = new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
 
   useEffect(() => {
     api.get('/reports/summary').then((r) => setSum(r.data));
     api.get('/reports/expenses').then((r) => setPie(r.data));
     api.get('/reports/weekly').then((r) => setWeek(r.data));
-    api.get('/transactions', { params: { limit: 10 } }).then((r) => setRows(r.data));
+    api.get('/transactions', { params: { limit: 8 } }).then((r) => setRows(r.data));
   }, [version]);
 
-  const total = pie.reduce((s, x) => s + x.value, 0);
-
   return (
-    <div className="space-y-6">
-      {/* Hàng 1: 3 thẻ */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="card"><p className="text-sm text-slate-500">Tổng tài sản</p><p className="text-3xl font-bold">{fmt(sum.totalAssets)}</p></div>
-        <div className="card"><p className="text-sm text-slate-500">Tổng thu tháng này</p><p className="text-3xl font-bold text-green-600">{fmt(sum.monthIncome)}</p></div>
-        <div className="card"><p className="text-sm text-slate-500">Tổng chi tháng này</p><p className="text-3xl font-bold text-red-600">{fmt(sum.monthExpense)}</p></div>
+    <div className="dashboard-page">
+      <div className="dashboard-welcome">
+        <div>
+          <p className="dashboard-eyebrow">TỔNG QUAN TÀI CHÍNH</p>
+          <h1>Chào bạn, {user?.name || 'bạn'} <span aria-hidden="true">👋</span></h1>
+          <p className="dashboard-muted">Cùng FiMa quản lý tài chính cá nhân thông minh và hiệu quả hơn.</p>
+        </div>
+        <div className="dashboard-date"><span aria-hidden="true">◷</span>{today}</div>
       </div>
 
-      {/* Hàng 2: biểu đồ tròn + cột */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div className="card">
-          <h3 className="mb-2 font-semibold">Cơ cấu chi tiêu tháng này</h3>
+      <section className="dashboard-stats" aria-label="Tóm tắt tài chính">
+        <StatCard icon="▣" label="Tổng tài sản" value={fmt(sum.totalAssets)} note="Số dư tất cả ví của bạn" tone="green" />
+        <StatCard icon="↗" label="Tổng thu tháng này" value={fmt(sum.monthIncome)} note="Thu nhập trong tháng" tone="mint" />
+        <StatCard icon="↘" label="Tổng chi tháng này" value={fmt(sum.monthExpense)} note="Chi tiêu trong tháng" tone="orange" />
+        <StatCard icon="◈" label="Dòng tiền ròng" value={fmt(net)} note="Thu nhập trừ chi tiêu" tone="purple" />
+      </section>
+
+      <section className="dashboard-charts">
+        <article className="card dashboard-panel dashboard-spending">
+          <div className="dashboard-panel__heading">
+            <div>
+              <h2>Cơ cấu chi tiêu</h2>
+              <p className="dashboard-muted">Theo danh mục trong tháng này</p>
+            </div>
+            <span className="dashboard-panel__badge">Tháng này</span>
+          </div>
           {pie.length ? (
-            <ResponsiveContainer width="100%" height={260}>
-              <PieChart>
-                <Pie data={pie} dataKey="value" nameKey="name" outerRadius={90} label={({ name, value }) => `${name} ${Math.round((value / total) * 100)}%`}>
-                  {pie.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                </Pie>
-                <Tooltip formatter={(v) => fmt(v)} />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : <p className="py-16 text-center text-slate-500">Chưa có khoản chi nào trong tháng.</p>}
-        </div>
-        <div className="card">
-          <h3 className="mb-2 font-semibold"> Khoản Thu - Chi trong 7 ngày qua</h3>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={week}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis tickFormatter={(v) => (v >= 1e6 ? `${v / 1e6}tr` : v >= 1e3 ? `${v / 1e3}k` : v)} />
-              <Tooltip formatter={(v) => fmt(v)} />
-              <Legend />
-              <Bar dataKey="income" name="Thu" fill="#16a34a" />
-              <Bar dataKey="expense" name="Chi" fill="#ef4444" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+            <div className="dashboard-spending__content">
+              <div className="dashboard-donut">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={pie} dataKey="value" nameKey="name" innerRadius="66%" outerRadius="92%" paddingAngle={3} stroke="none">
+                      {pie.map((item, index) => <Cell key={`${item.name}-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip formatter={(value, name) => [fmt(value), name]} {...chartTooltip} />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="dashboard-donut__center">
+                  <span className="dashboard-muted">Tổng chi</span>
+                  <strong>{fmt(pieTotal)}</strong>
+                </div>
+              </div>
+              <div className="dashboard-categories">
+                {pie.slice(0, 6).map((item, index) => (
+                  <div className="dashboard-category" key={`${item.name}-${index}`}>
+                    <span className="dashboard-category__name"><i style={{ backgroundColor: COLORS[index % COLORS.length] }} />{item.icon} {item.name}</span>
+                    <span className="dashboard-category__percent">{pieTotal ? Math.round((item.value / pieTotal) * 100) : 0}%</span>
+                    <span className="dashboard-category__amount">{fmt(item.value)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : <p className="dashboard-empty">Chưa có khoản chi nào trong tháng.</p>}
+        </article>
 
-      {/* Hàng 3: 10 giao dịch gần nhất */}
-      <div className="card">
-        <h3 className="mb-2 font-semibold">Các giao dịch gần nhất</h3>
+        <article className="card dashboard-panel dashboard-weekly">
+          <div className="dashboard-panel__heading">
+            <div>
+              <h2>Dòng tiền 7 ngày qua</h2>
+              <p className="dashboard-muted">So sánh khoản thu và chi mỗi ngày</p>
+            </div>
+            <div className="dashboard-legend"><span><i className="dashboard-legend__income" />Thu</span><span><i className="dashboard-legend__expense" />Chi</span></div>
+          </div>
+          <div className="dashboard-weekly__chart">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={week} margin={{ top: 10, right: 4, left: -18, bottom: 0 }} barGap={5}>
+                <CartesianGrid stroke="#17383a" strokeDasharray="3 5" vertical={false} />
+                <XAxis dataKey="date" tick={{ fill: '#8da7a6', fontSize: 11 }} axisLine={{ stroke: '#244749' }} tickLine={false} />
+                <YAxis tick={{ fill: '#8da7a6', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(value) => value >= 1e6 ? `${value / 1e6}tr` : value >= 1e3 ? `${value / 1e3}k` : value} />
+                <Tooltip formatter={(value) => fmt(value)} {...chartTooltip} />
+                <Bar dataKey="income" name="Thu" fill="#08c995" radius={[5, 5, 0, 0]} maxBarSize={24} />
+                <Bar dataKey="expense" name="Chi" fill="#f5a623" radius={[5, 5, 0, 0]} maxBarSize={24} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </article>
+      </section>
+
+      <section className="card dashboard-panel dashboard-transactions">
+        <div className="dashboard-panel__heading">
+          <div>
+            <h2>Giao dịch gần đây</h2>
+            <p className="dashboard-muted">Theo dõi những khoản thu chi mới nhất</p>
+          </div>
+          <Link className="dashboard-link" to="/transactions">Xem tất cả <span aria-hidden="true">→</span></Link>
+        </div>
         <TxTable rows={rows} />
-      </div>
+      </section>
     </div>
   );
 }
