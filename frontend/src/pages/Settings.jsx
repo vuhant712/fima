@@ -39,11 +39,32 @@ export default function Settings() {
         <button className="btn btn-ghost" onClick={() => { logout(); navigate('/'); }}>Đăng xuất</button>
       </div>
 
-      <div className="card space-y-3">
-        <h3 className="font-semibold">Cài đặt chung</h3>
-        <label className="flex items-center justify-between">🌙 Chế độ tối
-          <input type="checkbox" className="h-5 w-5" checked={dark} onChange={(e) => setDark(e.target.checked)} />
-        </label>
+      <div className="card settings-theme-card">
+        <div className="settings-theme-card__intro">
+          <span className="settings-theme-card__icon" aria-hidden="true">{dark ? '🌙' : '☀️'}</span>
+          <div>
+            <h3>Giao diện</h3>
+            <p>Chọn chế độ hiển thị phù hợp với bạn.</p>
+          </div>
+        </div>
+        <div className="settings-theme-toggle" role="group" aria-label="Chọn giao diện">
+          <button
+            type="button"
+            className={`settings-theme-toggle__option${!dark ? ' settings-theme-toggle__option--active' : ''}`}
+            aria-pressed={!dark}
+            onClick={() => setDark(false)}
+          >
+            <span aria-hidden="true">☀</span> Sáng
+          </button>
+          <button
+            type="button"
+            className={`settings-theme-toggle__option${dark ? ' settings-theme-toggle__option--active' : ''}`}
+            aria-pressed={dark}
+            onClick={() => setDark(true)}
+          >
+            <span aria-hidden="true">☾</span> Tối
+          </button>
+        </div>
       </div>
 
       <div className="card space-y-3">

@@ -28,7 +28,7 @@ function StatCard({ icon, label, value, note, tone }) {
 }
 
 export default function Dashboard() {
-  const { version, fmt } = useApp();
+  const { version, fmt, dark } = useApp();
   const { user } = useAuth();
   const [sum, setSum] = useState({ totalAssets: 0, monthIncome: 0, monthExpense: 0 });
   const [pie, setPie] = useState([]);
@@ -37,6 +37,12 @@ export default function Dashboard() {
   const net = sum.monthIncome - sum.monthExpense;
   const pieTotal = pie.reduce((total, item) => total + item.value, 0);
   const today = new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
+  const tooltip = dark ? chartTooltip : {
+    contentStyle: { background: '#ffffff', border: '1px solid #dce8e6', borderRadius: 12, color: '#193331' },
+    labelStyle: { color: '#294541' },
+    itemStyle: { color: '#193331' },
+  };
+  const axisColor = dark ? '#8da7a6' : '#718581';
 
   useEffect(() => {
     api.get('/reports/summary').then((r) => setSum(r.data));
@@ -80,7 +86,7 @@ export default function Dashboard() {
                     <Pie data={pie} dataKey="value" nameKey="name" innerRadius="66%" outerRadius="92%" paddingAngle={3} stroke="none">
                       {pie.map((item, index) => <Cell key={`${item.name}-${index}`} fill={COLORS[index % COLORS.length]} />)}
                     </Pie>
-                    <Tooltip formatter={(value, name) => [fmt(value), name]} {...chartTooltip} />
+                    <Tooltip formatter={(value, name) => [fmt(value), name]} {...tooltip} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="dashboard-donut__center">
@@ -112,10 +118,10 @@ export default function Dashboard() {
           <div className="dashboard-weekly__chart">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={week} margin={{ top: 10, right: 4, left: -18, bottom: 0 }} barGap={5}>
-                <CartesianGrid stroke="#17383a" strokeDasharray="3 5" vertical={false} />
-                <XAxis dataKey="date" tick={{ fill: '#8da7a6', fontSize: 11 }} axisLine={{ stroke: '#244749' }} tickLine={false} />
-                <YAxis tick={{ fill: '#8da7a6', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(value) => value >= 1e6 ? `${value / 1e6}tr` : value >= 1e3 ? `${value / 1e3}k` : value} />
-                <Tooltip formatter={(value) => fmt(value)} {...chartTooltip} />
+                <CartesianGrid stroke={dark ? '#17383a' : '#e1ebe9'} strokeDasharray="3 5" vertical={false} />
+                <XAxis dataKey="date" tick={{ fill: axisColor, fontSize: 11 }} axisLine={{ stroke: dark ? '#244749' : '#d5e2df' }} tickLine={false} />
+                <YAxis tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(value) => value >= 1e6 ? `${value / 1e6}tr` : value >= 1e3 ? `${value / 1e3}k` : value} />
+                <Tooltip formatter={(value) => fmt(value)} {...tooltip} />
                 <Bar dataKey="income" name="Thu" fill="#08c995" radius={[5, 5, 0, 0]} maxBarSize={24} />
                 <Bar dataKey="expense" name="Chi" fill="#f5a623" radius={[5, 5, 0, 0]} maxBarSize={24} />
               </BarChart>

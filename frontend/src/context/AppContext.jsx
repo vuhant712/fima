@@ -16,6 +16,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark);
+    document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
     localStorage.setItem('dark', dark ? '1' : '0');
   }, [dark]);
   useEffect(() => localStorage.setItem('currency', currency), [currency]);
