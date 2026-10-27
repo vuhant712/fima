@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const prisma = require('../lib/prisma');
@@ -51,17 +52,6 @@ exports.google = wrap(async (req, res) => {
   respond(res, await findOrCreate({ provider: 'GOOGLE', providerId: p.sub, name: p.name, email: p.email, avatarUrl: p.picture }));
 });
 
-// Client gửi access token từ Facebook SDK
-exports.facebook = wrap(async (req, res) => {
-  const { accessToken } = req.body;
-  if (!accessToken) throw httpErr(400, 'Thiếu accessToken');
-  const appToken = `${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`;
-  const dbg = await (await fetch(`https://graph.facebook.com/debug_token?input_token=${accessToken}&access_token=${appToken}`)).json();
-  if (!dbg.data?.is_valid || dbg.data.app_id !== process.env.FACEBOOK_APP_ID) throw httpErr(401, 'Token Facebook không hợp lệ');
-  const me = await (await fetch(`https://graph.facebook.com/me?fields=id,name,email,picture.type(large)&access_token=${accessToken}`)).json();
-  if (!me.id) throw httpErr(401, 'Không lấy được thông tin Facebook');
-  respond(res, await findOrCreate({ provider: 'FACEBOOK', providerId: me.id, name: me.name, email: me.email, avatarUrl: me.picture?.data?.url }));
-});
 
 exports.refresh = wrap(async (req, res) => {
   try {
@@ -76,4 +66,36 @@ exports.me = wrap(async (req, res) => {
   const user = await prisma.user.findUnique({ where: { id: req.userId } });
   if (!user) throw httpErr(401, 'Người dùng không tồn tại');
   res.json(publicUser(user));
+});
+
+const USERNAME_RE = /^[a-z0-9_.]{3,30}$/;
+const validPassword = (p) => typeof p === 'string' && p.length >= 8 && p.length <= 72 && /[A-Za-z]/.test(p) && /\d/.test(p);
+const DUMMY_HASH = bcrypt.hashSync('dummy-password-1', 10); // chống dò tài khoản qua thời gian phản hồi
+const normUser = (v) => String(v || '').trim().toLowerCase();
+
+exports.register = wrap(async (req, res) => {
+  const username = normUser(req.body.username);
+  const { password } = req.body;
+  if (!USERNAME_RE.test(username)) throw httpErr(400, 'Tài khoản gồm 3-30 ký tự: chữ, số, dấu _ hoặc .');
+  if (!validPassword(password)) throw httpErr(400, 'Mật khẩu tối thiểu 8 ký tự, gồm cả chữ và số');
+  try {
+    await prisma.user.create({
+      data: {
+        provider: 'LOCAL', providerId: username, username, name: username,
+        passwordHash: await bcrypt.hash(password, 10),
+        categories: { create: DEFAULT_CATEGORIES },
+      },
+    });
+  } catch (e) {
+    if (e.code === 'P2002') throw httpErr(409, 'Tài khoản đã tồn tại');
+    throw e;
+  }
+  res.status(201).json({ message: 'Đăng kí tài khoản thành công' });
+});
+
+exports.login = wrap(async (req, res) => {
+  const user = await prisma.user.findUnique({ where: { username: normUser(req.body.username) } });
+  const ok = await bcrypt.compare(String(req.body.password || ''), user?.passwordHash || DUMMY_HASH);
+  if (!user || !user.passwordHash || !ok) throw httpErr(401, 'Sai tài khoản hoặc mật khẩu');
+  respond(res, { user, isNew: false });
 });

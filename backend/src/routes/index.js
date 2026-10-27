@@ -10,7 +10,8 @@ const g = require('../controllers/savingsGoalController');
 
 // Công khai
 router.post('/auth/google', a.google);
-router.post('/auth/facebook', a.facebook);
+router.post('/auth/register', a.register);
+router.post('/auth/login', a.login);
 router.post('/auth/refresh', a.refresh);
 
 // Cần JWT

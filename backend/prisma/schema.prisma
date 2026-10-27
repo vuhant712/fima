@@ -10,6 +10,7 @@ datasource db {
 enum Provider {
   GOOGLE
   FACEBOOK
+  LOCAL
 }
 
 enum CategoryType {
@@ -30,6 +31,8 @@ model User {
   email      String?    @unique
   avatarUrl  String?
   provider   Provider
+  username     String?  @unique
+  passwordHash String?
   providerId String
   createdAt  DateTime   @default(now())
   wallets    Wallet[]
