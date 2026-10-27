@@ -10,7 +10,7 @@ const features = [
   ['📊', 'Báo cáo trực quan', 'Biểu đồ rõ ràng, xuất Excel hoặc PDF chỉ một chạm.'],
 ];
 const steps = [
-  ['1', 'Đăng nhập', 'Một chạm với Google hoặc Facebook.'],
+  ['1', 'Đăng nhập', 'Một chạm với Google hoặc tài khoản FiMa'],
   ['2', 'Tạo ví', 'Nhập số dư hiện tại của bạn.'],
   ['3', 'Ghi chép', 'Thêm thu chi và theo dõi báo cáo mỗi ngày.'],
 ];

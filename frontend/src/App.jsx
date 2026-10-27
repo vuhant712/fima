@@ -12,6 +12,7 @@ import Wallets from './pages/Wallets.jsx';
 import Budgets from './pages/Budgets.jsx';
 import Reports from './pages/Reports.jsx';
 import Settings from './pages/Settings.jsx';
+import SavingsGoals from './pages/SavingsGoals.jsx';
 import { Privacy, DataDeletion } from './pages/Legal.jsx';
 
 export default function App() {
