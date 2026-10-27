@@ -42,12 +42,22 @@ export default function TxTable({ rows, onEdit, onDelete }) {
             <th className="th text-right">
               <button
                 type="button"
-                className="inline-flex items-center gap-1"
+                className="group inline-flex cursor-pointer flex-col items-end rounded px-1 py-0.5 text-right transition-colors hover:text-teal-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
                 aria-label={`Sắp xếp số tiền${amountSort ? ` ${amountSort === 'asc' ? 'tăng dần' : 'giảm dần'}` : ''}`}
-                title="Sắp xếp theo số tiền"
+                title="Nhấn để sắp xếp số tiền tăng dần hoặc giảm dần"
                 onClick={() => setAmountSort((current) => current === 'asc' ? 'desc' : 'asc')}
               >
-                Số tiền{amountSort && <span aria-hidden="true">{amountSort === 'asc' ? '↑' : '↓'}</span>}
+                <span className="inline-flex items-center gap-1">
+                  Số tiền
+                  <span className="text-sm font-bold text-teal-500" aria-hidden="true">
+                    {amountSort === 'asc' ? '↑' : amountSort === 'desc' ? '↓' : '↕'}
+                  </span>
+                </span>
+                <span className="normal-case text-[10px] font-medium tracking-normal text-teal-500 group-hover:text-teal-400">
+                  {amountSort
+                    ? `Đang ${amountSort === 'asc' ? 'tăng' : 'giảm'} dần · nhấn để đảo chiều`
+                    : 'Nhấn để sắp xếp'}
+                </span>
               </button>
             </th>
             {onDelete && <th className="th" />}
