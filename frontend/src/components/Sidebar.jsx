@@ -32,10 +32,12 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
-      <div className="fima-sidebar-tip">
-        <span className="fima-sidebar-tip__icon" aria-hidden="true">🌱</span>
-        <p>Quản lý tài chính<br />thông minh cùng FiMa</p>
-        <NavLink to="/budgets" className="fima-sidebar-tip__link">Khám phá ngay <span aria-hidden="true">→</span></NavLink>
+      <div className="fima-sidebar-note">
+        <span className="fima-sidebar-note__icon" aria-hidden="true">✦</span>
+        <div>
+          <span className="fima-sidebar-note__eyebrow">SỐNG CHỦ ĐỘNG</span>
+          <p>Vững vàng từng khoản chi.</p>
+        </div>
       </div>
     </aside>
   );
