@@ -37,6 +37,7 @@ export default function App() {
           <Route path="/wallets" element={<Wallets />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/budgets" element={<Budgets />} />
+          <Route path="/savings-goals" element={<SavingsGoals />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
