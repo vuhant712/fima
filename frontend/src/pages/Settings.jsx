@@ -11,7 +11,7 @@ export default function Settings() {
   const { dark, setDark, toast } = useApp();
   const navigate = useNavigate();
   const [cats, setCats] = useState([]);
-  const [nc, setNc] = useState({ type: 'EXPENSE', name: '', icon: '📁' });
+  const [nc, setNc] = useState({ type: 'EXPENSE', name: '', icon: '' });
   const [fb, setFb] = useState('');
   const [sent, setSent] = useState(false);
 
@@ -67,11 +67,29 @@ export default function Settings() {
         </div>
       </div>
 
+      <div className="card settings-icon-card">
+        <div className="settings-icon-card__intro">
+          <span className="settings-icon-card__symbol" aria-hidden="true">✦</span>
+          <div>
+            <h3>Mục icon:</h3>
+            <p>Khám phá và chọn icon bạn muốn sử dụng.</p>
+          </div>
+        </div>
+        <a
+          className="settings-icon-card__link"
+          href="https://run.vn/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Truy cập để chọn icon nhé <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+
       <div className="card space-y-3">
         <h3 className="font-semibold">Quản lý danh mục</h3>
         <form onSubmit={addCat} className="flex flex-wrap gap-2">
           <select className="input w-auto" value={nc.type} onChange={(e) => setNc({ ...nc, type: e.target.value })}><option value="EXPENSE">Chi</option><option value="INCOME">Thu</option></select>
-          <input className="input w-20" value={nc.icon} onChange={(e) => setNc({ ...nc, icon: e.target.value })} />
+          <input className="input w-20" placeholder="icon" aria-label="Icon danh mục" value={nc.icon} onChange={(e) => setNc({ ...nc, icon: e.target.value })} />
           <input required className="input flex-1" placeholder="Tên danh mục" value={nc.name} onChange={(e) => setNc({ ...nc, name: e.target.value })} />
           <button className="btn btn-primary">Thêm</button>
         </form>

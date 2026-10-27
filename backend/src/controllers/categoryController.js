@@ -8,7 +8,7 @@ exports.list = wrap(async (req, res) => {
 exports.create = wrap(async (req, res) => {
   const { type, name, icon } = req.body;
   if (!['INCOME', 'EXPENSE'].includes(type) || !name?.trim()) throw httpErr(400, 'Dữ liệu danh mục không hợp lệ');
-  res.status(201).json(await prisma.category.create({ data: { userId: req.userId, type, name: name.trim(), icon: icon || '📁' } }));
+  res.status(201).json(await prisma.category.create({ data: { userId: req.userId, type, name: name.trim(), icon: icon ?? '' } }));
 });
 
 exports.remove = wrap(async (req, res) => {

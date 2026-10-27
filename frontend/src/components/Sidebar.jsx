@@ -15,8 +15,7 @@ export default function Sidebar() {
   return (
     <aside className="fima-sidebar print:hidden">
       <div className="fima-brand">
-        <FiMaLogo className="h-12 w-12" />
-        <span>FiMa</span>
+        <FiMaLogo alt="FiMa" className="h-14 w-14" />
       </div>
       <p className="fima-nav-label">MENU</p>
       <nav className="fima-nav">

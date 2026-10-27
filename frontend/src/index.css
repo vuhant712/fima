@@ -92,13 +92,9 @@ body { @apply bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100; 
 }
 .fima-brand {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 9px;
-  margin: 0 0 40px 18px;
-  color: #22d59f;
-  font-size: 25px;
-  font-weight: 800;
-  letter-spacing: -.06em;
+  margin: 0 0 40px;
 }
 .fima-brand .fima-logo { filter: drop-shadow(0 0 12px rgba(0, 210, 153, .2)); }
 .fima-nav-label {
@@ -302,8 +298,8 @@ body { @apply bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100; 
 @media (max-width: 640px) {
   .fima-shell { flex-direction: column; }
   .fima-sidebar { position: relative; width: 100%; height: auto; flex: 0 0 auto; border-right: 0; border-bottom: 1px solid #103537; padding: 10px 13px; }
-  .fima-brand { margin: 0 0 10px 4px; font-size: 21px; }
-  .fima-brand .fima-logo { width: 34px; height: 34px; }
+  .fima-brand { margin: 0 0 10px; }
+  .fima-brand .fima-logo { width: 48px; height: 48px; }
   .fima-nav-label, .fima-sidebar-tip { display: none; }
   .fima-nav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
   .fima-nav__link { min-height: 38px; flex: 0 0 auto; gap: 7px; padding: 0 10px; font-size: 11px; }
@@ -350,6 +346,14 @@ body { @apply bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100; 
 .settings-theme-toggle__option:hover { color: #e7f3f1; }
 .settings-theme-toggle__option--active { background: #103330; color: #46ddb0; box-shadow: inset 0 0 0 1px rgba(0, 201, 149, .25); }
 .settings-theme-toggle__option:focus-visible { outline: 2px solid #00c995; outline-offset: 2px; }
+.settings-icon-card { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.settings-icon-card__intro { display: flex; align-items: center; gap: 13px; }
+.settings-icon-card__symbol { display: grid; width: 44px; height: 44px; flex: 0 0 44px; place-items: center; border: 1px solid #185147; border-radius: 13px; background: rgba(0, 201, 149, .12); color: #46ddb0; font-size: 22px; }
+.settings-icon-card__intro h3 { margin: 0; font-size: 15px; font-weight: 700; }
+.settings-icon-card__intro p { margin: 5px 0 0; color: #91aaa9; font-size: 12px; }
+.settings-icon-card__link { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 9px; border: 1px solid rgba(0, 201, 149, .35); border-radius: 10px; background: rgba(0, 201, 149, .12); padding: 0 15px; color: #46ddb0; font-size: 13px; font-weight: 650; text-decoration: none; transition: transform .18s ease, background .18s ease, border-color .18s ease; }
+.settings-icon-card__link:hover { transform: translateY(-2px); border-color: rgba(0, 201, 149, .65); background: rgba(0, 201, 149, .2); }
+.settings-icon-card__link:focus-visible { outline: 2px solid #00c995; outline-offset: 3px; }
 
 html:not(.dark) .fima-shell {
   --fima-bg: #f2f7f6;
@@ -411,11 +415,17 @@ html:not(.dark) .settings-theme-toggle { border-color: #dce8e6; background: #f2f
 html:not(.dark) .settings-theme-toggle__option { color: #667d78; }
 html:not(.dark) .settings-theme-toggle__option:hover { color: #294541; }
 html:not(.dark) .settings-theme-toggle__option--active { background: #fff; color: #00875f; box-shadow: 0 1px 4px rgba(31, 65, 59, .12); }
+html:not(.dark) .settings-icon-card__symbol { border-color: #d8ece4; background: #eaf8f1; color: #00875f; }
+html:not(.dark) .settings-icon-card__intro p { color: #718581; }
+html:not(.dark) .settings-icon-card__link { border-color: rgba(0, 135, 95, .25); background: #eaf8f1; color: #00875f; }
+html:not(.dark) .settings-icon-card__link:hover { border-color: rgba(0, 135, 95, .48); background: #dcf4e9; }
 
 @media (max-width: 640px) {
   .settings-theme-card { align-items: flex-start; flex-direction: column; gap: 15px; }
   .settings-theme-toggle { width: 100%; }
   .settings-theme-toggle__option { flex: 1; }
+  .settings-icon-card { align-items: flex-start; flex-direction: column; gap: 15px; }
+  .settings-icon-card__link { width: 100%; }
 }
 
 .dashboard-lower { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(280px, .95fr); align-items: start; gap: 14px; }
