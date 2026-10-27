@@ -92,11 +92,13 @@ body { @apply bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100; 
 }
 .fima-brand {
   display: flex;
+  height: 128px;
+  flex: 0 0 128px;
   justify-content: center;
   align-items: center;
-  margin: 0 0 40px;
+  margin: 0 0 12px;
 }
-.fima-brand .fima-logo { filter: drop-shadow(0 0 12px rgba(0, 210, 153, .2)); }
+.fima-brand .fima-logo { width: 120px; height: 120px; filter: drop-shadow(0 0 16px rgba(0, 210, 153, .25)); }
 .fima-nav-label {
   margin: 0 12px 12px;
   color: #5e7b7b;
@@ -298,8 +300,8 @@ body { @apply bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100; 
 @media (max-width: 640px) {
   .fima-shell { flex-direction: column; }
   .fima-sidebar { position: relative; width: 100%; height: auto; flex: 0 0 auto; border-right: 0; border-bottom: 1px solid #103537; padding: 10px 13px; }
-  .fima-brand { margin: 0 0 10px; }
-  .fima-brand .fima-logo { width: 48px; height: 48px; }
+  .fima-brand { height: 72px; flex-basis: 72px; margin: 0 0 10px; }
+  .fima-brand .fima-logo { width: 64px; height: 64px; }
   .fima-nav-label, .fima-sidebar-tip { display: none; }
   .fima-nav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
   .fima-nav__link { min-height: 38px; flex: 0 0 auto; gap: 7px; padding: 0 10px; font-size: 11px; }
