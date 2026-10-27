@@ -25,7 +25,7 @@ export default function Layout() {
   }, [user, navigate]);
 
   if (loading) return <Loading />;
-  if (!user) return <Navigate to="/" replace />;
+  if (!user) return <Navigate to="/login" replace />;
   if (!ready) return <Loading />;
 
   return (

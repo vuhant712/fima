@@ -13,6 +13,8 @@ import Reports from './pages/Reports.jsx';
 import Settings from './pages/Settings.jsx';
 import SavingsGoals from './pages/SavingsGoals.jsx';
 import { Privacy, DataDeletion } from './pages/Legal.jsx';
+import Login from './pages/Login.jsx';
+import Register from './pages/Register.jsx';
 
 export default function App() {
   const [splash, setSplash] = useState(true);

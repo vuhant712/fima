@@ -19,7 +19,7 @@ export function Privacy() {
     <Page title="Chính sách quyền riêng tư của FiMa">
       <p>FiMa là ứng dụng quản lý thu chi cá nhân. Trang này giải thích chúng tôi thu thập, sử dụng và bảo vệ dữ liệu của bạn như thế nào.</p>
 
-      <h2 className="text-xl font-semibold">1. Dữ liệu chúng tôi thu thập</h2>
+      <h2 className="text-xl font-semibold"><li>Khi đăng ký tài khoản FiMa: tên tài khoản và mật khẩu (mật khẩu được mã hóa một chiều, chúng tôi không đọc được). Khi đăng nhập bằng Google: tên, địa chỉ email và ảnh đại diện công khai. FiMa <b>không</b> nhận mật khẩu Google của bạn.</li></h2>
       <ul className="list-disc space-y-1 pl-6">
         <li>Khi đăng nhập bằng Google hoặc Facebook: tên, địa chỉ email và ảnh đại diện công khai của bạn. FiMa <b>không</b> nhận mật khẩu của các tài khoản này.</li>
         <li>Dữ liệu bạn tự nhập vào ứng dụng: ví, danh mục, giao dịch thu chi, ngân sách và ghi chú.</li>
@@ -48,7 +48,6 @@ export function DataDeletion() {
         <li>Gửi email tới <a className="text-green-600 underline" href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Yêu cầu xóa dữ liệu FiMa')}`}>{CONTACT_EMAIL}</a> với tiêu đề “Yêu cầu xóa dữ liệu FiMa”, từ chính địa chỉ email gắn với tài khoản của bạn.</li>
         <li>Chúng tôi sẽ xác minh và xóa dữ liệu trong vòng 30 ngày kể từ khi nhận yêu cầu, sau đó gửi email xác nhận.</li>
       </ol>
-      <p>Nếu đăng nhập bằng Facebook, bạn cũng có thể gỡ FiMa khỏi tài khoản Facebook tại: Cài đặt → Ứng dụng và trang web → chọn FiMa → Xóa. Sau đó hãy gửi email như trên để chúng tôi xóa dữ liệu đã lưu.</p>
     </Page>
   );
 }

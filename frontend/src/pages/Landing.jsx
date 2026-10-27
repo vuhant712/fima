@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import LoginModal from '../components/LoginModal.jsx';
 import Reveal from '../components/Reveal.jsx';
 import FiMaLogo from '../components/FiMaLogo.jsx';
 
@@ -19,9 +18,8 @@ const steps = [
 export default function Landing() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
   const root = useRef(null);
-  const start = () => (user ? navigate('/dashboard') : setOpen(true));
+  const start = () => navigate(user ? '/dashboard' : '/register');
 
   // Parallax: cập nhật biến --y theo vị trí cuộn
   useEffect(() => {
@@ -39,8 +37,17 @@ export default function Landing() {
   return (
     <div ref={root} className="overflow-x-hidden">
       <header className="sticky top-0 z-30 flex items-center justify-between bg-white/70 px-6 py-3 backdrop-blur dark:bg-slate-900/70">
-        <FiMaLogo className="h-10" />
-        <button className="btn btn-primary" onClick={start}>{user ? 'Vào ứng dụng' : 'Đăng nhập'}</button>
+        <img src="/logo.png" alt="FiMa" className="h-10" />
+        <div className="flex gap-2">
+          {user ? (
+            <button className="btn btn-primary" onClick={() => navigate('/dashboard')}>Vào ứng dụng</button>
+          ) : (
+            <>
+              <button className="btn btn-ghost" onClick={() => navigate('/login')}>Đăng nhập</button>
+              <button className="btn btn-primary" onClick={() => navigate('/register')}>Đăng kí</button>
+            </>
+          )}
+        </div>
       </header>
 
       {/* HERO */}
@@ -107,7 +114,6 @@ export default function Landing() {
         </p>
       </section>
 
-      {open && <LoginModal onClose={() => setOpen(false)} />}
     </div>
   );
 }
