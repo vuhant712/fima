@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
+import FloatingParticles from './FloatingParticles.jsx';
 
 export default function AuthShell({ title, subtitle, children, footer }) {
   return (
     <div className="flex min-h-screen">
       <div className="auth-bg relative hidden w-1/2 items-center justify-center overflow-hidden lg:flex">
+        <FloatingParticles absolute light />   {/* THÊM */}
         <div className="float absolute -left-16 top-20 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
         <div className="float absolute bottom-10 right-0 h-80 w-80 rounded-full bg-amber-300/20 blur-3xl [animation-delay:1.5s]" />
         <div className="slide-up relative z-10 px-12 text-center text-white">

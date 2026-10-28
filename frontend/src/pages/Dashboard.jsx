@@ -5,6 +5,7 @@ import api from '../services/api.js';
 import { useApp } from '../context/AppContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import TxTable from '../components/TxTable.jsx';
+import CountUp from '../components/CountUp.jsx';
 
 export const COLORS = ['#16a34a', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#14b8a6', '#ec4899', '#64748b'];
 const chartTooltip = {
@@ -13,13 +14,14 @@ const chartTooltip = {
   itemStyle: { color: '#e5f5f2' },
 };
 
-function StatCard({ icon, label, value, note, tone }) {
+function StatCard({ icon, label, value, note, tone, money }) {
+  const { fmt } = useApp();
   return (
     <article className={`dashboard-stat dashboard-stat--${tone}`}>
       <div className="dashboard-stat__icon" aria-hidden="true">{icon}</div>
       <div className="min-w-0">
         <p className="dashboard-muted text-sm">{label}</p>
-        <p className="dashboard-stat__value">{value}</p>
+        <p className="dashboard-stat__value">{money != null ? <CountUp value={money} format={fmt} /> : value}</p>
         <p className="dashboard-stat__note">{note}</p>
       </div>
       <span className="dashboard-stat__glow" aria-hidden="true" />
@@ -92,10 +94,10 @@ export default function Dashboard() {
       </div>
 
       <section className="dashboard-stats" aria-label="Tóm tắt tài chính">
-        <StatCard icon="▣" label="Tổng tài sản" value={fmt(sum.totalAssets)} note="Số dư tất cả ví của bạn" tone="green" />
-        <StatCard icon="↗" label="Tổng thu tháng này" value={fmt(sum.monthIncome)} note="Thu nhập trong tháng" tone="mint" />
-        <StatCard icon="↘" label="Tổng chi tháng này" value={fmt(sum.monthExpense)} note="Chi tiêu trong tháng" tone="orange" />
-        <StatCard icon="◈" label="Dòng tiền ròng" value={fmt(net)} note="Thu nhập trừ chi tiêu" tone="purple" />
+        <StatCard icon="▣" label="Tổng tài sản" money={sum.totalAssets} note="Số dư tất cả ví của bạn" tone="green" />
+        <StatCard icon="↗" label="Tổng thu tháng này" money={sum.monthIncome} note="Thu nhập trong tháng" tone="mint" />
+        <StatCard icon="↘" label="Tổng chi tháng này" money={sum.monthExpense} note="Chi tiêu trong tháng" tone="orange" />
+        <StatCard icon="◈" label="Dòng tiền ròng" money={net} note="Thu nhập trừ chi tiêu" tone="purple" />
       </section>
 
       <section className="dashboard-charts">

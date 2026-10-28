@@ -35,7 +35,8 @@ export function AppProvider({ children }) {
     <Ctx.Provider value={{ dark, setDark, currency, setCurrency, lang, setLang, toast, version, bump, txModal, openTxModal, closeTxModal, fmt }}>
       {children}
       {toastMsg && (
-        <div className={`fixed bottom-6 right-6 z-[60] rounded-lg px-4 py-3 text-white shadow-lg ${toastMsg.type === 'err' ? 'bg-red-600' : 'bg-green-600'}`}>
+        <div key={toastMsg.text} role="status" className={`toast ${toastMsg.type === 'err' ? 'toast--err' : 'toast--ok'}`}>
+          <span aria-hidden="true">{toastMsg.type === 'err' ? '⚠️' : '✅'}</span>
           {toastMsg.text}
         </div>
       )}

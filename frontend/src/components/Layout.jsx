@@ -6,6 +6,7 @@ import Sidebar from './Sidebar.jsx';
 import Header from './Header.jsx';
 import TransactionModal from './TransactionModal.jsx';
 import FiMaLogo from './FiMaLogo.jsx';
+import FloatingParticles from './FloatingParticles.jsx';
 
 const Loading = () => (
   <div className="flex h-screen items-center justify-center">
@@ -30,6 +31,7 @@ export default function Layout() {
 
   return (
     <div className="fima-shell flex min-h-screen">
+      <FloatingParticles />      {/* THÊM */}
       <Sidebar />
       <div className="flex-1">
         <Header />

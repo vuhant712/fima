@@ -1,40 +1,70 @@
-const particles = [
-  [8, 14, 4, 6.4, -2, 'green'],
-  [19, 72, 3, 7.8, -5, 'amber'],
-  [27, 36, 5, 8.6, -1, 'green'],
-  [36, 88, 3, 6.9, -4, 'green'],
-  [44, 18, 4, 9.2, -6, 'amber'],
-  [53, 63, 3, 7.2, -3, 'green'],
-  [61, 43, 5, 8.1, -7, 'green'],
-  [69, 91, 4, 6.7, -2, 'amber'],
-  [76, 25, 3, 9.5, -5, 'green'],
-  [84, 69, 5, 7.5, -1, 'green'],
-  [93, 39, 3, 8.8, -4, 'amber'],
-  [13, 48, 3, 9.1, -6, 'green'],
-  [32, 8, 4, 7.1, -3, 'amber'],
-  [48, 95, 3, 8.3, -7, 'green'],
-  [72, 54, 4, 6.6, -5, 'green'],
-  [89, 11, 3, 9.4, -2, 'amber'],
-];
+import { useEffect, useRef } from 'react';
 
-export default function FloatingParticles() {
-  return (
-    <div className="floating-particles" aria-hidden="true">
-      {particles.map(([left, top, size, duration, delay, color], index) => (
-        <span
-          key={index}
-          className={`floating-particles__dot floating-particles__dot--${color}`}
-          style={{
-            left: `${left}%`,
-            top: `${top}%`,
-            width: `${size}px`,
-            height: `${size}px`,
-            animationDuration: `${duration}s`,
-            animationDelay: `${delay}s`,
-            '--drift': `${index % 2 ? -12 : 12}px`,
-          }}
-        />
-      ))}
-    </div>
-  );
+export default function FloatingParticles({ absolute = false, light = false }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    const ctx = canvas.getContext('2d');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const mouse = { x: -9999, y: -9999 };
+    let w = 0, h = 0, dots = [], raf;
+
+    const resize = () => {
+      const r = canvas.getBoundingClientRect();
+      w = r.width; h = r.height;
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const n = Math.min(70, Math.floor((w * h) / 22000));
+      dots = Array.from({ length: n }, () => ({
+        x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35,
+        r: 1.5 + Math.random() * 2.5,
+        amber: Math.random() < 0.25,
+      }));
+    };
+    const onMove = (e) => {
+      const r = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      const main = light ? '255,255,255' : '0,201,149';
+      for (let i = 0; i < dots.length; i++) {
+        const d = dots[i];
+        const dx = d.x - mouse.x, dy = d.y - mouse.y, dist = Math.hypot(dx, dy);
+        if (dist < 120 && dist > 0) { d.x += (dx / dist) * 1.4; d.y += (dy / dist) * 1.4; }
+        if (!reduce) { d.x += d.vx; d.y += d.vy; }
+        d.x = Math.max(0, Math.min(w, d.x));
+        d.y = Math.max(0, Math.min(h, d.y));
+        if (d.x <= 0 || d.x >= w) d.vx *= -1;
+        if (d.y <= 0 || d.y >= h) d.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = d.amber ? 'rgba(245,166,35,.6)' : `rgba(${main},.55)`;
+        ctx.fill();
+
+        for (let j = i + 1; j < dots.length; j++) {
+          const e = dots[j], l = Math.hypot(d.x - e.x, d.y - e.y);
+          if (l < 120) {
+            ctx.strokeStyle = `rgba(${main},${(1 - l / 120) * 0.2})`;
+            ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(e.x, e.y); ctx.stroke();
+          }
+        }
+      }
+      if (!reduce) raf = requestAnimationFrame(draw);
+    };
+
+    resize();
+    draw();
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+    window.addEventListener('mousemove', onMove);
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); window.removeEventListener('mousemove', onMove); };
+  }, [light]);
+
+  return <canvas ref={ref} aria-hidden="true" className={`particles-canvas${absolute ? ' particles-canvas--absolute' : ''}`} />;
 }

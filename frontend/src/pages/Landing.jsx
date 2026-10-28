@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import Reveal from '../components/Reveal.jsx';
 import FiMaLogo from '../components/FiMaLogo.jsx';
+import FloatingParticles from '../components/FloatingParticles.jsx';
 
 const features = [
   ['👛', 'Nhiều ví', 'Tiền mặt, ngân hàng, ví điện tử, tất cả trong một nơi.'],
@@ -26,7 +27,11 @@ export default function Landing() {
     let raf;
     const onScroll = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => root.current?.style.setProperty('--y', window.scrollY));
+      raf = requestAnimationFrame(() => {
+        root.current?.style.setProperty('--y', window.scrollY);
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        root.current?.style.setProperty('--p', max > 0 ? window.scrollY / max : 0);   // THÊM
+      });
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); };
@@ -48,10 +53,12 @@ export default function Landing() {
             </>
           )}
         </div>
+        <div className="scroll-progress" />
       </header>
 
       {/* HERO */}
       <section className="relative flex min-h-[90vh] items-center justify-center overflow-hidden px-6 text-center">
+        <FloatingParticles absolute />   {/* THÊM */}
         <div style={p(0.45)} className="absolute -left-24 top-10 h-80 w-80 rounded-full bg-green-300/40 blur-3xl" />
         <div style={p(0.25)} className="absolute -right-20 top-40 h-96 w-96 rounded-full bg-amber-200/50 blur-3xl" />
         <div style={p(0.6)} className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-emerald-400/30 blur-3xl" />
