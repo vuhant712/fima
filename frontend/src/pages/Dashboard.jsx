@@ -14,16 +14,46 @@ const chartTooltip = {
   itemStyle: { color: '#e5f5f2' },
 };
 
-function StatCard({ icon, label, value, note, tone, money }) {
+function StatCard({ icon, label, value, note, tone, money, wallets }) {
   const { fmt } = useApp();
+  const [open, setOpen] = useState(false);
+  const expandable = Array.isArray(wallets);
+
   return (
-    <article className={`dashboard-stat dashboard-stat--${tone}`}>
+    <article className={`dashboard-stat dashboard-stat--${tone}${expandable ? ' dashboard-stat--expandable' : ''}`}>
       <div className="dashboard-stat__icon" aria-hidden="true">{icon}</div>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="dashboard-muted text-sm">{label}</p>
         <p className="dashboard-stat__value">{money != null ? <CountUp value={money} format={fmt} /> : value}</p>
-        <p className="dashboard-stat__note">{note}</p>
+        <div className="dashboard-stat__foot">
+          <p className="dashboard-stat__note">{note}</p>
+          {expandable && (
+            <button
+              type="button"
+              className="dashboard-stat__toggle"
+              aria-expanded={open}
+              aria-label={open ? 'Ẩn số dư các ví' : 'Xem số dư từng ví'}
+              onClick={() => setOpen((v) => !v)}
+            >
+              <svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true">
+                <path d="M5 7.5l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
+      {expandable && (
+        <div className={`dashboard-stat__wallets${open ? ' open' : ''}`} aria-hidden={!open}>
+          <ul>
+            {wallets.length ? wallets.map((w) => (
+              <li key={w.id}>
+                <span className="dashboard-stat__wname"><span>{w.icon}</span><span className="truncate">{w.name}</span></span>
+                <strong>{fmt(Number(w.balance))}</strong>
+              </li>
+            )) : <li>Chưa có ví nào</li>}
+          </ul>
+        </div>
+      )}
       <span className="dashboard-stat__glow" aria-hidden="true" />
     </article>
   );
@@ -47,6 +77,7 @@ export default function Dashboard() {
   const [rows, setRows] = useState([]);
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [wallets, setWallets] = useState([]);
   const net = sum.monthIncome - sum.monthExpense;
   const pieTotal = pie.reduce((total, item) => total + item.value, 0);
   const today = new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
@@ -64,6 +95,7 @@ export default function Dashboard() {
       api.get('/reports/weekly').then((r) => setWeek(r.data)),
       api.get('/transactions', { params: { limit: 8 } }).then((r) => setRows(r.data)),
       api.get('/savings-goals').then((r) => setGoals(r.data)),
+      api.get('/wallets').then((r) => setWallets(r.data)),
     ]).finally(() => setLoading(false));
   }, [version]);
 
@@ -107,7 +139,7 @@ export default function Dashboard() {
       </div>
 
       <section className="dashboard-stats" aria-label="Tóm tắt tài chính">
-        <StatCard icon="▣" label="Tổng tài sản" money={sum.totalAssets} note="Số dư tất cả ví của bạn" tone="green" />
+        <StatCard icon="▣" label="Tổng tài sản" money={sum.totalAssets} note="Số dư tất cả ví của bạn" tone="green" wallets={wallets} />
         <StatCard icon="↗" label="Tổng thu tháng này" money={sum.monthIncome} note="Thu nhập trong tháng" tone="mint" />
         <StatCard icon="↘" label="Tổng chi tháng này" money={sum.monthExpense} note="Chi tiêu trong tháng" tone="orange" />
         <StatCard icon="◈" label="Dòng tiền ròng" money={net} note="Thu nhập trừ chi tiêu" tone="purple" />

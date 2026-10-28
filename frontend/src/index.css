@@ -712,3 +712,52 @@ html:not(.dark) .dashboard-insight { border-color: #dce8e6; background: #f8fbfa;
 @keyframes shimmer { to { background-position: -200% 0 } }
 .skeleton { border-radius: 15px; background-image: linear-gradient(90deg, rgba(18, 56, 58, .55) 25%, rgba(32, 92, 86, .6) 50%, rgba(18, 56, 58, .55) 75%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
 html:not(.dark) .skeleton { background-image: linear-gradient(90deg, #e6efed 25%, #f4f9f8 50%, #e6efed 75%); }
+/* ===== Thẻ Tổng tài sản: mở rộng xem từng ví ===== */
+.dashboard-stats { align-items: start; }
+.dashboard-stat--expandable { flex-wrap: wrap; gap: 0 13px; }
+.dashboard-stat__foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+.dashboard-stat__toggle { z-index: 1; display: grid; width: 26px; height: 26px; flex: 0 0 26px; place-items: center; cursor: pointer; border: 1px solid rgba(20, 218, 164, .3); border-radius: 50%; background: rgba(0, 201, 149, .12); color: #2bdfad; transition: background .2s ease, box-shadow .2s ease; }
+.dashboard-stat__toggle:hover { background: rgba(0, 201, 149, .25); box-shadow: 0 0 12px rgba(0, 201, 149, .3); }
+.dashboard-stat__toggle svg { transition: transform .3s cubic-bezier(.34, 1.56, .64, 1); }
+.dashboard-stat__toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+.dashboard-stat__wallets { z-index: 1; display: grid; flex: 0 0 100%; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .35s ease, opacity .3s ease; }
+.dashboard-stat__wallets.open { grid-template-rows: 1fr; opacity: 1; }
+.dashboard-stat__wallets ul { min-height: 0; overflow: hidden; margin: 0; padding: 0; list-style: none; }
+.dashboard-stat__wallets li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px dashed rgba(120, 148, 146, .25); color: #b7d0cd; font-size: 12px; }
+.dashboard-stat__wallets li:first-child { margin-top: 12px; }
+.dashboard-stat__wallets li strong { color: #eff9f7; font-weight: 700; white-space: nowrap; }
+.dashboard-stat__wname { display: flex; min-width: 0; align-items: center; gap: 6px; }
+.dashboard-stat__wallets.open li { animation: slide-up .35s ease-out both; }
+.dashboard-stat__wallets.open li:nth-child(2) { animation-delay: .06s; }
+.dashboard-stat__wallets.open li:nth-child(3) { animation-delay: .12s; }
+.dashboard-stat__wallets.open li:nth-child(n + 4) { animation-delay: .18s; }
+
+html:not(.dark) .dashboard-stat__wallets li { color: #52706c; }
+html:not(.dark) .dashboard-stat__wallets li strong { color: #12332f; }
+/* ===== Nút chỉnh sửa / xóa trên thẻ ngân sách ===== */
+.budget-action { display: grid; width: 30px; height: 30px; place-items: center; cursor: pointer; border-radius: 8px; transition: background .2s ease, transform .25s cubic-bezier(.34, 1.56, .64, 1); }
+.budget-action:hover { background: rgba(0, 201, 149, .16); transform: scale(1.15) rotate(-8deg); }
+.budget-action--danger:hover { background: rgba(239, 68, 68, .16); }
+/* ===== Thẻ ví: hiệu ứng + chế độ sửa tên/icon ===== */
+.wallet-card { transition: transform .25s ease, box-shadow .25s ease; }
+.wallet-card:hover { transform: translateY(-4px); box-shadow: 0 16px 34px rgba(5, 150, 105, .35); }
+
+.wallet-action { display: grid; width: 30px; height: 30px; place-items: center; cursor: pointer; border-radius: 8px; transition: background .2s ease, transform .25s cubic-bezier(.34, 1.56, .64, 1); }
+.wallet-action:hover { background: rgba(255, 255, 255, .22); transform: scale(1.15) rotate(-8deg); }
+
+.wallet-icon-input, .wallet-name-input { border: 1px solid rgba(255, 255, 255, .45); background: rgba(255, 255, 255, .15); color: #fff; outline: none; transition: border-color .2s ease, box-shadow .2s ease; }
+.wallet-icon-input:focus, .wallet-name-input:focus { border-color: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, .25); }
+.wallet-icon-input { width: 56px; height: 48px; border-radius: 12px; text-align: center; font-size: 26px; }
+.wallet-name-input { width: 100%; border-radius: 10px; padding: 8px 12px; font-size: 14px; }
+.wallet-name-input::placeholder { color: rgba(255, 255, 255, .6); }
+
+.wallet-icon-pick { display: grid; width: 34px; height: 34px; place-items: center; cursor: pointer; border-radius: 9px; background: rgba(255, 255, 255, .1); font-size: 18px; transition: transform .2s cubic-bezier(.34, 1.56, .64, 1), background .2s ease; }
+.wallet-icon-pick:hover { background: rgba(255, 255, 255, .25); transform: scale(1.18); }
+.wallet-icon-pick.active { background: rgba(255, 255, 255, .3); box-shadow: 0 0 0 2px #fff; }
+
+.wallet-btn { cursor: pointer; border-radius: 10px; background: rgba(255, 255, 255, .18); padding: 7px 16px; font-size: 13px; font-weight: 600; transition: background .2s ease, transform .2s ease; }
+.wallet-btn:hover { background: rgba(255, 255, 255, .3); transform: translateY(-1px); }
+.wallet-btn--save { background: #fff; color: #047857; }
+.wallet-btn--save:hover { background: #ecfdf5; }
