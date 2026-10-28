@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useApp } from '../context/AppContext.jsx';
 import MoneyInput from '../components/MoneyInput.jsx';
 import FiMaLogo from '../components/FiMaLogo.jsx';
+import { fireConfetti } from '../utils/confetti.js';
 
 export default function Setup() {
   const { user, loading } = useAuth();
@@ -21,6 +22,7 @@ export default function Setup() {
     try {
       await api.post('/wallets', { name, balance: Number(balance || 0) });
       toast('🎉 Tuyệt vời, bắt đầu quản lý tài chính thôi!');
+      fireConfetti();
       navigate('/dashboard');
     } catch (err) {
       toast(errMsg(err), 'err');

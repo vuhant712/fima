@@ -29,6 +29,15 @@ function StatCard({ icon, label, value, note, tone, money }) {
   );
 }
 
+const DashboardSkeleton = () => (
+  <div className="dashboard-page" aria-busy="true">
+    <div className="skeleton h-14 w-72" />
+    <div className="dashboard-stats">{[0, 1, 2, 3].map((i) => <div key={i} className="skeleton h-28" />)}</div>
+    <div className="dashboard-charts"><div className="skeleton h-64" /><div className="skeleton h-64" /></div>
+    <div className="dashboard-lower"><div className="skeleton h-72" /><div className="skeleton h-72" /></div>
+  </div>
+);
+
 export default function Dashboard() {
   const { version, fmt, dark } = useApp();
   const { user } = useAuth();
@@ -37,6 +46,7 @@ export default function Dashboard() {
   const [week, setWeek] = useState([]);
   const [rows, setRows] = useState([]);
   const [goals, setGoals] = useState([]);
+  const [loading, setLoading] = useState(true);
   const net = sum.monthIncome - sum.monthExpense;
   const pieTotal = pie.reduce((total, item) => total + item.value, 0);
   const today = new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
@@ -48,11 +58,13 @@ export default function Dashboard() {
   const axisColor = dark ? '#8da7a6' : '#718581';
 
   useEffect(() => {
-    api.get('/reports/summary').then((r) => setSum(r.data));
-    api.get('/reports/expenses').then((r) => setPie(r.data));
-    api.get('/reports/weekly').then((r) => setWeek(r.data));
-    api.get('/transactions', { params: { limit: 8 } }).then((r) => setRows(r.data));
-    api.get('/savings-goals').then((r) => setGoals(r.data));
+    Promise.allSettled([
+      api.get('/reports/summary').then((r) => setSum(r.data)),
+      api.get('/reports/expenses').then((r) => setPie(r.data)),
+      api.get('/reports/weekly').then((r) => setWeek(r.data)),
+      api.get('/transactions', { params: { limit: 8 } }).then((r) => setRows(r.data)),
+      api.get('/savings-goals').then((r) => setGoals(r.data)),
+    ]).finally(() => setLoading(false));
   }, [version]);
 
   const activeGoals = goals.filter((goal) => goal.savedAmount < goal.targetAmount);
@@ -82,6 +94,7 @@ export default function Dashboard() {
     },
   ].filter(Boolean).slice(0, 3);
 
+  if (loading) return <DashboardSkeleton />;
   return (
     <div className="dashboard-page">
       <div className="dashboard-welcome">

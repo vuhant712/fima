@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import api, { errMsg } from '../services/api.js';
 import { useApp } from '../context/AppContext.jsx';
 import MoneyInput from '../components/MoneyInput.jsx';
+import { fireConfetti } from '../utils/confetti.js';
 
 const icons = ['💻', '🚲', '🛡️', '🏠', '✈️', '🎓', '🎯'];
 const emptyForm = { name: '', description: '', icon: icons[0], targetAmount: '', savedAmount: '', targetDate: '' };
@@ -62,9 +63,12 @@ export default function SavingsGoals() {
 
   const addContribution = async (event) => {
     event.preventDefault();
+    const justCompleted = contributing.savedAmount < contributing.targetAmount
+      && contributing.savedAmount + Number(amount) >= contributing.targetAmount;
     try {
       await api.post(`/savings-goals/${contributing.id}/contributions`, { amount: Number(amount) });
-      toast('Đã cập nhật khoản tiết kiệm');
+      toast(justCompleted ? '🎉 Chúc mừng! Bạn đã hoàn thành mục tiêu' : 'Đã cập nhật khoản tiết kiệm');
+      if (justCompleted) fireConfetti();
       setContributing(null);
       setAmount('');
       await refresh();

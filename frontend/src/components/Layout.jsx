@@ -21,9 +21,16 @@ export default function Layout() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
-    api.get('/wallets').then((r) => (r.data.length ? setReady(true) : navigate('/setup', { replace: true })));
-  }, [user, navigate]);
+    const onMove = (e) => {
+      const card = e.target.closest?.('.card, .dashboard-stat');
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      card.style.setProperty('--my', `${e.clientY - r.top}px`);
+    };
+    window.addEventListener('mousemove', onMove);
+    return () => window.removeEventListener('mousemove', onMove);
+  }, []);
 
   if (loading) return <Loading />;
   if (!user) return <Navigate to="/login" replace />;
@@ -32,6 +39,8 @@ export default function Layout() {
   return (
     <div className="fima-shell flex min-h-screen">
       <FloatingParticles />      {/* THÊM */}
+      <FloatingParticles />
+      <div key={pathname} className="route-bar" />   {/* THÊM */}
       <Sidebar />
       <div className="flex-1">
         <Header />
