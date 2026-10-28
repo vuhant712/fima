@@ -2,8 +2,7 @@ import axios from 'axios';
 
 // Dev: dùng proxy '/api'. Production: đặt VITE_API_URL = https://<backend>.onrender.com/api
 const base = import.meta.env.VITE_API_URL || '/api';
-const api = axios.create({ baseURL: base });
-
+const api = axios.create({ baseURL: base, timeout: 60000 });   // THÊM timeout
 api.interceptors.request.use((c) => {
   const t = localStorage.getItem('accessToken');
   if (t) c.headers.Authorization = `Bearer ${t}`;
